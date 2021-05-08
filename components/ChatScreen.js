@@ -24,6 +24,7 @@ function ChatScreen({ chat, messages }) {
     const router = useRouter();
     const [messagesSnapshot] = useCollection(db.collection("chats").doc(router.query.id).collection("messages").orderBy("timestamp","asc"));
     
+    
     const [recipientSnapshot] = useCollection(db.collection("users").where("email", "==", getRecipientEmail(chat.users, user)));
 
     const endOfMessageRef = useRef(null);
@@ -74,7 +75,7 @@ function ChatScreen({ chat, messages }) {
             message: input,
             user: user.email,
             photoURL: user.photoURL,
-        })
+        });
 
         setInput("");
         scrollToBottom();
@@ -90,15 +91,15 @@ function ChatScreen({ chat, messages }) {
                 {recipient ? (
                     <Avatar src={recipient?.photoURL} />
                     ) : (
-                        <Avatar src={recipientEmail[0]} />
+                        <Avatar>{recipientEmail[0]}</Avatar>
                     )
                 }
                 <HeaderInformation>
                     <h3>{recipientEmail}</h3>
                     {recipientSnapshot ? (
-                        <p>Last active: {' '}
-                        {recipient?.lastseen?.toDate() ? (
-                            <TimeAgo datetime={recipient?.lastseen.toDate()} />
+                        <p>Last active : {" "}
+                        {recipient?.lastSeen?.toDate() ? (
+                            <TimeAgo datetime={recipient?.lastSeen?.toDate()} />
                             ) : "Unavailable"}
                         </p>
                     ) : (
@@ -117,7 +118,7 @@ function ChatScreen({ chat, messages }) {
             </Header>
 
             <MessageContainer>
-                {showMessages}
+                {showMessages()}
                 <EndOfMessage ref={endOfMessageRef} />
             </MessageContainer>
 
